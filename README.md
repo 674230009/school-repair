@@ -86,9 +86,6 @@ mysql -u root < C:\xampp\htdocs\school_repair\school_repair.sql
 👉 **[http://localhost/school_repair](http://localhost/school_repair)**
 
 ---
-
-## 🔑 บัญชีผู้ใช้สำหรับทดสอบ (Demo Accounts)
-
 ## 🗄️ โครงสร้างฐานข้อมูล (Database Schema)
 
 1. **`users`**: ตารางผู้ใช้งาน (`id`, `username`, `password`, `fullname`, `role`, `email`, `created_at`)
