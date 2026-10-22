@@ -1,9 +1,10 @@
 <?php
 // create_request.php
 require_once 'config/database.php';
+require_once 'classes/EmailNotifier.php';
 require_once 'includes/header.php';
 
-checkRole(['admin', 'teacher']);
+checkRole(['admin', 'student']);
 $user = currentUser();
 $success = false;
 $error = '';
@@ -80,6 +81,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
             $success = true;
+
+            // ส่งอีเมลแจ้ง Admin ทุกคน
+            try {
+                $adminStmt = $pdo->query("SELECT email FROM users WHERE role = 'admin' AND email IS NOT NULL AND email != ''");
+                $adminEmails = $adminStmt->fetchAll(PDO::FETCH_COLUMN);
+                if (!empty($adminEmails)) {
+                    $reqData = [
+                        'id'           => $repair_id,
+                        'request_no'   => $request_no,
+                        'building'     => $building,
+                        'room'         => $room,
+                        'problem_type' => $problem_type,
+                        'description'  => $description,
+                        'urgency'      => $urgency,
+                    ];
+                    $notifier = new EmailNotifier();
+                    $notifier->notifyNewRequest($adminEmails, $reqData, $user['fullname']);
+                }
+            } catch (Exception $ignored) {
+                // ไม่ทำให้ flow หลักพังถ้าอีเมลส่งไม่ได้
+            }
         } catch (Exception $e) {
             if ($pdo && $pdo->inTransaction()) {
                 $pdo->rollBack();

@@ -18,12 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email            = trim($_POST['email'] ?? '');
     $password         = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    $role             = $_POST['role'] ?? 'teacher';
+    $role             = $_POST['role'] ?? 'student';
 
-    // ตรวจสอบความถูกต้องของบทบาท (อนุญาต admin, teacher และ technician จากหน้าลงทะเบียน)
+    // ตรวจสอบความถูกต้องของบทบาท
     $role = strtolower($role);
-    if (!in_array($role, ['admin', 'teacher', 'technician'], true)) {
-        $role = 'teacher';
+    if (!in_array($role, ['admin', 'student', 'technician'], true)) {
+        $role = 'student';
     }
 
     if (!empty($username) && !empty($fullname) && !empty($password) && !empty($confirm_password)) {
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="mb-3">
                             <label for="role" class="form-label">ประเภทผู้ใช้งาน <span class="text-danger">*</span></label>
                             <select class="form-select" id="role" name="role" required>
-                                <option value="teacher" <?= (($_POST['role'] ?? '') === 'teacher') ? 'selected' : '' ?>>ครู / บุคลากรทางการศึกษา</option>
+                                <option value="student" <?= (($_POST['role'] ?? '') === 'student') ? 'selected' : '' ?>>นักศึกษา / บุคลากร</option>
                                 <option value="technician" <?= (($_POST['role'] ?? '') === 'technician') ? 'selected' : '' ?>>ช่างซ่อม / เจ้าหน้าที่พัสดุ</option>
                                 <option value="admin" <?= (strtolower($_POST['role'] ?? '') === 'admin') ? 'selected' : '' ?>>ผู้ดูแลระบบ (Admin)</option>
                             </select>

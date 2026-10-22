@@ -1,12 +1,14 @@
 <?php
 // config/auth.php
+require_once __DIR__ . '/constants.php';
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 function checkLogin(): void {
     if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
+        header("Location: " . BASE_URL . "pages/auth/login.php");
         exit;
     }
 }
@@ -18,7 +20,7 @@ function checkRole(array $allowedRoles): void {
         echo "<div style='text-align:center; padding:50px; font-family:sans-serif;'>
                 <h1 style='color:red;'>403 Forbidden</h1>
                 <p>คุณไม่มีสิทธิ์เข้าถึงหน้านี้</p>
-                <a href='index.php'>กลับหน้าหลัก</a>
+                <a href='" . BASE_URL . "'>กลับหน้าหลัก</a>
               </div>";
         exit;
     }

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `username` VARCHAR(50) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
   `fullname` VARCHAR(100) NOT NULL,
-  `role` ENUM('admin', 'teacher', 'technician') NOT NULL DEFAULT 'teacher',
+  `role` ENUM('admin', 'student', 'technician') NOT NULL DEFAULT 'student',
   `email` VARCHAR(100) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS `comments` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `role`, `email`) VALUES
 (1, 'admin', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'ผู้ดูแลระบบ (Admin)', 'admin', 'admin@school.ac.th'),
-(2, 'teacher1', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'ครูสมชาย ใจดี', 'teacher', 'somchai@school.ac.th'),
-(3, 'teacher2', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'ครูวิภา รัตนอุบล', 'teacher', 'wipa@school.ac.th'),
+(2, 'student1', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'นายสมชาย ใจดี', 'student', 'somchai@school.ac.th'),
+(3, 'student2', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'นางวิภา รัตนอุบล', 'student', 'wipa@school.ac.th'),
 (4, 'tech1', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'ช่างประเสริฐ ฝีมือดี', 'technician', 'prasert@school.ac.th'),
 (5, 'tech2', '$2y$10$p8O2NRa2bn2jbcAIHZDHyuqS2vZ3ffOgNcMxzZp2lxC5XR/OqNZGm', 'ช่างสมศักดิ์ ซ่อมไว', 'technician', 'somsak@school.ac.th')
 ON DUPLICATE KEY UPDATE `fullname` = VALUES(`fullname`);

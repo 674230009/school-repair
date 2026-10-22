@@ -1,6 +1,7 @@
 <?php
 // view_request.php
 require_once 'config/database.php';
+require_once 'classes/EmailNotifier.php';
 require_once 'includes/header.php';
 
 checkLogin();
@@ -55,6 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE id = :id
         ");
         $aStmt->execute(['aid' => $tech_id, 'due' => $due_date, 'id' => $id]);
+
+        // ส่งอีเมลแจ้งช่างที่ได้รับมอบหมาย
+        try {
+            $techInfo = $pdo->prepare("SELECT email, fullname FROM users WHERE id = :id");
+            $techInfo->execute(['id' => $tech_id]);
+            $techRow = $techInfo->fetch();
+            if ($techRow && !empty($techRow['email'])) {
+                $reqForEmail = array_merge($req, ['id' => $id, 'due_date' => $due_date]);
+                $notifier = new EmailNotifier();
+                $notifier->notifyAssigned($techRow['email'], $techRow['fullname'], $reqForEmail);
+            }
+        } catch (Exception $ignored) {}
+
         header("Location: view_request.php?id=$id");
         exit;
     }
@@ -73,6 +87,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE id = :id
         ");
         $uStmt->execute(['status' => $new_status, 'result' => $result, 'cost' => $cost, 'comp' => $completed_date, 'id' => $id]);
+
+        // ส่งอีเมลแจ้งผู้แจ้ซ่อม
+        try {
+            $reporterInfo = $pdo->prepare("SELECT u.email, u.fullname FROM users u JOIN repair_requests r ON r.user_id = u.id WHERE r.id = :id");
+            $reporterInfo->execute(['id' => $id]);
+            $reporterRow = $reporterInfo->fetch();
+            $techName = $req['tech_name'] ?? '';
+            if ($reporterRow && !empty($reporterRow['email'])) {
+                $reqForEmail = array_merge($req, ['status' => $new_status, 'result' => $result, 'cost' => $cost]);
+                $notifier = new EmailNotifier();
+                $notifier->notifyStatusUpdate($reporterRow['email'], $reporterRow['fullname'], $reqForEmail, $techName);
+            }
+        } catch (Exception $ignored) {}
 
         // อัปโหลดรูปหลังซ่อม (After Image)
         if (isset($_FILES['after_image']) && $_FILES['after_image']['error'] === UPLOAD_ERR_OK) {

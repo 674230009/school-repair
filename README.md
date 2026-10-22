@@ -1,94 +1,251 @@
-# 🛠️ ระบบแจ้งซ่อมอุปกรณ์และสถานที่ภายในโรงเรียน (School Repair System)
+# 🔧 ระบบแจ้งซ่อมภายในโรงเรียน (School Repair System)
 
-ระบบบริหารจัดการและแจ้งซ่อมอุปกรณ์ เครื่องใช้ สิ่งอำนวยความสะดวก และสถานที่ภายในโรงเรียน พัฒนาด้วย **PHP Native (PDO)** และ **MySQL** พร้อมหน้าจอผู้ใช้งานที่รองรับการทำงาน Responsive บนทุกอุปกรณ์ด้วย **Bootstrap 5**
-
----
-
-## 🌟 ฟีเจอร์หลักของระบบ (Features)
-
-- 🔐 **ระบบจัดการผู้ใช้งานและสิทธิ์เข้าถึง (Multi-Role Authentication)**
-  - **ผู้ดูแลระบบ (Admin):** มองเห็นภาพรวมงานทั้งหมด, มอบหมายงานให้ช่างซ่อม, กำหนดวันเสร็จ (Due Date), อัปเดตสถานะงาน
-  - **ครู / บุคลากร (Teacher):** กรอกแบบฟอร์มแจ้งซ่อมใหม่, แนบรูปภาพปัญหา, ติดตามสถานะงานของตนเอง
-  - **ช่างซ่อม / เจ้าหน้าที่พัสดุ (Technician):** ดูรายการงานที่ได้รับมอบหมาย, อัปเดตสถานะการซ่อม (รับเรื่อง/กำลังดำเนินการ/เสร็จสิ้น), บันทึกผลการซ่อมและค่าใช้จ่าย, แนบรูปภาพหลังซ่อม (After)
-- 📝 **ระบบลงทะเบียนสมาชิก (Register) & เข้าสู่ระบบ (Login)**
-  - สมัครสมาชิกระบุบทบาทได้ทันที
-  - ระบบรักษาความปลอดภัยรหัสผ่านด้วย `password_hash()` (BCrypt)
-- 📊 **แผงควบคุมสถิติ (Dashboard)**
-  - แสดงจำนวนงานทั้งหมด, งานรอดำเนินการ, งานกำลังดำเนินการ และงานที่เสร็จสมบูรณ์
-- 💬 **ระบบความคิดเห็นและการสื่อสาร (Comments & Discussion)**
-  - ครู ช่างซ่อม และ Admin สามารถพิมพ์ข้อความโต้ตอบกันในแต่ละใบแจ้งซ่อมได้
-- 📷 **ระบบแนบรูปภาพประกอบ (Image Uploads)**
-  - รองรับการแนบรูปภาพก่อนซ่อม (Before) และรูปภาพหลังซ่อมเสร็จ (After)
+ระบบจัดการแจ้งซ่อมอุปกรณ์และสถานที่ภายในโรงเรียน พัฒนาด้วย **PHP OOP** + **MySQL** รองรับ 3 บทบาทผู้ใช้งาน
 
 ---
 
-## 💻 เทคโนโลยีที่ใช้ (Tech Stack)
-
-- **Backend:** PHP (PDO Extension, Class Database Singleton)
-- **Database:** MySQL / MariaDB (utf8mb4)
-- **Frontend:** HTML5, CSS3, JavaScript (ES6)
-- **UI Framework:** Bootstrap 5.3, FontAwesome 6.4
-- **Alert System:** SweetAlert2
+## 📋 สารบัญ
+- [ภาพรวมระบบ](#ภาพรวมระบบ)
+- [เทคโนโลยีที่ใช้](#เทคโนโลยีที่ใช้)
+- [โครงสร้างโฟลเดอร์](#โครงสร้างโฟลเดอร์)
+- [การติดตั้ง](#การติดตั้ง)
+- [ตั้งค่าฐานข้อมูล](#ตั้งค่าฐานข้อมูล)
+- [บัญชีผู้ใช้ทดสอบ](#บัญชีผู้ใช้ทดสอบ)
+- [การใช้งานตาม Role](#การใช้งานตาม-role)
+- [ระบบแจ้งเตือนอีเมล](#ระบบแจ้งเตือนอีเมล)
+- [Deploy บน InfinityFree](#deploy-บน-infinityfree)
 
 ---
 
-## 📁 โครงสร้างโฟลเดอร์ (Directory Structure)
+## ภาพรวมระบบ
 
-```text
+```
+นักศึกษา/บุคลากร → แจ้งซ่อม → [pending]
+                                    ↓
+                    Admin มอบหมายช่าง → [accepted]
+                                    ↓
+                    ช่างดำเนินการซ่อม → [in_progress]
+                                    ↓
+                    ซ่อมเสร็จ + บันทึกผล → [completed] ✅
+```
+
+### ฟีเจอร์หลัก
+- ✅ ระบบสมัครสมาชิก / เข้าสู่ระบบ
+- ✅ Dashboard แยกตามบทบาท (Admin / ช่าง / นักศึกษา)
+- ✅ แจ้งซ่อมพร้อมแนบรูปภาพก่อนซ่อม
+- ✅ มอบหมายงานให้ช่าง + กำหนดวันเสร็จ
+- ✅ ช่างอัปเดตสถานะ + บันทึกผลการซ่อม + ค่าใช้จ่าย + รูปหลังซ่อม
+- ✅ ระบบความคิดเห็นในแต่ละใบแจ้งซ่อม
+- ✅ แจ้งเตือนอีเมลอัตโนมัติ 3 เหตุการณ์
+
+---
+
+## เทคโนโลยีที่ใช้
+
+| ส่วน | เทคโนโลยี |
+|------|-----------|
+| Backend | PHP 8+ (OOP, PDO, Singleton Pattern) |
+| Database | MySQL / MariaDB (utf8mb4) |
+| Frontend | Bootstrap 5.3 |
+| Icons | Font Awesome 6.4 |
+| Popup | SweetAlert2 |
+| Server | XAMPP (Apache + MySQL) |
+
+---
+
+## โครงสร้างโฟลเดอร์
+
+```
 school_repair/
+│
+├── index.php                    # redirect ตาม role อัตโนมัติ
+├── login.php                    # หน้าเข้าสู่ระบบ / ออกจากระบบ
+├── register.php                 # หน้าสมัครสมาชิก
+├── create_request.php           # ฟอร์มแจ้งซ่อม
+├── view_request.php             # ดูรายละเอียด + จัดการใบแจ้งซ่อม
+├── school_repair.sql            # ไฟล์สร้างฐานข้อมูล + ข้อมูลทดสอบ
+│
+├── pages/
+│   ├── admin/
+│   │   └── dashboard.php        # Dashboard สำหรับ Admin
+│   ├── technician/
+│   │   └── dashboard.php        # Dashboard สำหรับช่าง
+│   └── student/
+│       └── dashboard.php        # Dashboard สำหรับนักศึกษา/บุคลากร
+│
+├── config/
+│   ├── database.php             # คลาส Database (Singleton Pattern)
+│   └── auth.php                 # ฟังก์ชันตรวจสอบสิทธิ์ (Session)
+│
+├── classes/
+│   └── EmailNotifier.php        # คลาสส่งอีเมลแจ้งเตือน
+│
+├── includes/
+│   ├── header.php               # Navbar + HTML Head (ใช้ร่วมกันทุกหน้า)
+│   └── footer.php               # ส่วนท้าย + Bootstrap JS
+│
 ├── assets/
 │   └── css/
-│       └── style.css           # ไฟล์ปรับแต่งสไตล์ CSS
-├── config/
-│   ├── auth.php                # ตรวจสอบ Session & สิทธิ์ผู้ใช้งาน (Auth & Roles)
-│   └── database.php            # คลาสเชื่อมต่อฐานข้อมูล PDO Singleton
-├── includes/
-│   ├── header.php              # Navbar & Header template
-│   └── footer.php              # Footer template
-├── uploads/                    # โฟลเดอร์เก็บรูปภาพประกอบที่อัปโหลด
-├── create_request.php          # หน้าแบบฟอร์มแจ้งซ่อมใหม่
-├── index.php                   # หน้าหลัก Dashboard แสดงรายการแจ้งซ่อม
-├── login.php                   # หน้าเข้าสู่ระบบ
-├── register.php                # หน้าสมัครสมาชิกใหม่
-├── view_request.php            # หน้าดูรายละเอียดใบแจ้งซ่อม, อัปเดตสถานะ & ความคิดเห็น
-├── school_repair.sql           # ไฟล์โครงสร้างฐานข้อมูลและข้อมูลเริ่มต้น (Seed Data)
-└── README.md                   # เอกสารอธิบายโครงการ
+│       └── style.css            # Custom CSS เพิ่มเติม
+│
+└── uploads/                     # โฟลเดอร์เก็บรูปภาพ (สร้างเองก่อนใช้งาน)
 ```
 
 ---
 
-## 🚀 ขั้นตอนการติดตั้งและใช้งาน (Installation Guide)
+## การติดตั้ง
 
-### 1. การจัดเตรียมไฟล์โครงการ
-นำโฟลเดอร์โครงการไปวางไว้ในโฟลเดอร์ `htdocs` ของ XAMPP:
-```text
-C:\xampp\htdocs\school_repair
+### ความต้องการของระบบ
+- PHP 8.0 ขึ้นไป
+- MySQL 5.7 / MariaDB 10.4 ขึ้นไป
+- Apache Web Server (แนะนำ XAMPP)
+
+### ขั้นตอน
+
+**1. วางโปรเจกต์ใน htdocs**
+```
+C:\xampp\htdocs\school_repair\
 ```
 
-### 2. เปิดใช้งาน XAMPP
-เปิดโปรแกรม **XAMPP Control Panel** และกด Start ในบริการ:
-- **Apache**
-- **MySQL**
-
-### 3. นำเข้าฐานข้อมูล (Import Database)
-1. เปิด Web Browser ไปที่ [http://localhost/phpmyadmin/](http://localhost/phpmyadmin/)
-2. สร้างฐานข้อมูลใหม่ชื่อ `school_repair` (Collation: `utf8mb4_unicode_ci`)
-3. กดเลือกฐานข้อมูล `school_repair` -> ไปที่แท็บ **Import** (นำเข้า)
-4. เลือกไฟล์ `C:\xampp\htdocs\school_repair\school_repair.sql` แล้วกด **Go** (หรือ Execute นำเข้าข้อมูล)
-
-*(หรือนำเข้าผ่าน Command Line)*
-```bash
-mysql -u root < C:\xampp\htdocs\school_repair\school_repair.sql
+**2. สร้างโฟลเดอร์ uploads**
+```
+C:\xampp\htdocs\school_repair\uploads\
 ```
 
-### 4. เข้าใช้งานระบบ
-เปิดเบราว์เซอร์แล้วเข้าที่ URL:
-👉 **[http://localhost/school_repair](http://localhost/school_repair)**
+**3. เปิด XAMPP → Start Apache + MySQL**
+
+**4. นำเข้าฐานข้อมูล** (ดูขั้นตอนด้านล่าง)
+
+**5. เปิดเว็บ**
+```
+http://localhost/school_repair/
+```
 
 ---
-## 🗄️ โครงสร้างฐานข้อมูล (Database Schema)
 
-1. **`users`**: ตารางผู้ใช้งาน (`id`, `username`, `password`, `fullname`, `role`, `email`, `created_at`)
-2. **`repair_requests`**: ตารางใบแจ้งซ่อม (`id`, `request_no`, `user_id`, `building`, `room`, `problem_type`, `description`, `urgency`, `status`, `assigned_to`, `due_date`, `completion_date`, `cost`, `result`, `created_at`)
-3. **`repair_images`**: ตารางรูปภาพ (`id`, `repair_id`, `image_type`, `image_path`, `uploaded_at`)
-4. **`comments`**: ตารางความคิดเห็น (`id`, `repair_id`, `user_id`, `comment`, `created_at`)
+## ตั้งค่าฐานข้อมูล
+
+### วิธีที่ 1 — Import ไฟล์ SQL (แนะนำ)
+
+1. เปิด `http://localhost/phpmyadmin`
+2. คลิก **Import** → เลือกไฟล์ `school_repair.sql`
+3. กด **Go**
+
+### วิธีที่ 2 — ถ้ามีฐานข้อมูลเดิม (teacher → student)
+
+รัน SQL นี้ใน phpMyAdmin:
+
+```sql
+ALTER TABLE users
+MODIFY role ENUM('admin', 'student', 'technician') NOT NULL DEFAULT 'student';
+
+UPDATE users SET role = 'student' WHERE role = 'teacher';
+UPDATE users SET username = 'student1' WHERE username = 'teacher1';
+UPDATE users SET username = 'student2' WHERE username = 'teacher2';
+```
+
+### ตั้งค่าการเชื่อมต่อ DB
+
+แก้ไขค่าในไฟล์ `config/database.php`:
+
+```php
+private $host     = "localhost";          // สำหรับ XAMPP
+private $db_name  = "school_repair";
+private $username = "root";
+private $password = "";
+```
+
+**สำหรับ InfinityFree:**
+```php
+private $host     = "sql207.infinityfree.com";
+private $db_name  = "if0_43198980_school_repair";
+private $username = "if0_43198980";
+private $password = "รหัสผ่าน vPanel";
+```
+
+---
+
+## บัญชีผู้ใช้ทดสอบ
+
+> รหัสผ่านทุกบัญชี: **123456**
+
+| Username | Role | หน้าที่ |
+|----------|------|---------|
+| `admin` | Admin | ดูทุกอย่าง + มอบหมายงาน |
+| `student1` | นักศึกษา/บุคลากร | แจ้งซ่อม + ดูใบของตัวเอง |
+| `student2` | นักศึกษา/บุคลากร | แจ้งซ่อม + ดูใบของตัวเอง |
+| `tech1` | ช่างเทคนิค | รับงาน + อัปเดตสถานะ |
+| `tech2` | ช่างเทคนิค | รับงาน + อัปเดตสถานะ |
+
+---
+
+## การใช้งานตาม Role
+
+### 👨‍💼 Admin
+- เห็นใบแจ้งซ่อมทุกรายการ + สถิติภาพรวม 4 การ์ด
+- มอบหมายงานให้ช่าง + กำหนดวันนัดซ่อม
+- สร้างใบแจ้งซ่อมแทนผู้อื่นได้
+- อัปเดตสถานะการซ่อมได้
+
+### 🔧 ช่างเทคนิค (Technician)
+- เห็นงานที่ตัวเองรับผิดชอบ + งาน pending ทั้งหมด
+- อัปเดตสถานะ: รับเรื่อง → กำลังซ่อม → ซ่อมเสร็จ
+- บันทึกผลการซ่อม + ค่าใช้จ่าย
+- แนบรูปภาพหลังซ่อม
+
+### 👨‍🎓 นักศึกษา/บุคลากร (Student)
+- กรอกแบบฟอร์มแจ้งซ่อม + แนบรูปก่อนซ่อม
+- ติดตามสถานะใบแจ้งซ่อมของตัวเอง
+- ดูชื่อช่างที่รับผิดชอบ + วันกำหนดเสร็จ
+- เพิ่มความคิดเห็นในใบแจ้งซ่อม
+
+---
+
+## ระบบแจ้งเตือนอีเมล
+
+ระบบจะส่งอีเมลอัตโนมัติใน 3 เหตุการณ์:
+
+| เหตุการณ์ | ส่งให้ใคร | หัวข้ออีเมล |
+|----------|---------|------------|
+| มีใบแจ้งซ่อมใหม่ | Admin ทุกคน | `[แจ้งซ่อมใหม่] RP-XXXXXX-XXX` |
+| มอบหมายงานให้ช่าง | ช่างที่รับผิดชอบ | `[งานใหม่] RP-XXXXXX-XXX` |
+| อัปเดตสถานะ | ผู้แจ้งซ่อม | `[อัปเดต] สถานะล่าสุด` |
+
+> ⚠️ **หมายเหตุ:** PHP `mail()` อาจไม่ทำงานบน Free Hosting บางเจ้า  
+> ถ้าอีเมลไม่ถูกส่ง ระบบอื่นยังทำงานได้ปกติ (ไม่กระทบ flow หลัก)
+
+---
+
+## Deploy บน InfinityFree
+
+1. อัปโหลดไฟล์ทั้งหมดเข้า **File Manager → htdocs/**
+2. สร้างโฟลเดอร์ **uploads/** ใน htdocs
+3. Import `school_repair.sql` ผ่าน **phpMyAdmin** ของ InfinityFree
+4. แก้ไขค่า DB ใน `config/database.php` ให้ตรงกับ InfinityFree
+5. เปิดเว็บที่ `https://schoolrepair.42web.io`
+
+---
+
+## ความปลอดภัย
+
+| จุดป้องกัน | วิธีการ |
+|-----------|---------|
+| SQL Injection | PDO Prepared Statements ทุกจุด |
+| XSS | `htmlspecialchars()` ทุกการแสดงผล |
+| รหัสผ่าน | `password_hash()` bcrypt |
+| การเข้าถึงหน้า | `checkLogin()` + `checkRole()` |
+| File Upload | กรองสกุลไฟล์ + rename ด้วย `uniqid()` |
+
+---
+
+## OOP Design Patterns ที่ใช้
+
+| Pattern | ไฟล์ | จุดประสงค์ |
+|---------|------|-----------|
+| **Singleton** | `config/database.php` | เชื่อมต่อ DB แค่ครั้งเดียวตลอด session |
+| **Encapsulation** | `config/auth.php` | ซ่อน session logic ไว้ใน function |
+| **Class** | `classes/EmailNotifier.php` | แยก logic การส่งอีเมลออกมาเป็น class |
+
+---
+
+*พัฒนาสำหรับวิชาการเขียนโปรแกรมเชิงวัตถุ (OOP)*

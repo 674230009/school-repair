@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mt-3 text-muted text-center" style="font-size: 0.85rem;">
                 <p class="mb-0"><strong>บัญชีทดสอบ:</strong></p>
                 <p class="mb-0">Admin: admin / 123456</p>
-                <p class="mb-0">Teacher: teacher1 / 123456</p>
+                <p class="mb-0">Student: student1 / 123456</p>
                 <p class="mb-0">Technician: tech1 / 123456</p>
             </div>
         </div>
