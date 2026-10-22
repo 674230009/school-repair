@@ -13,7 +13,6 @@
 - [บัญชีผู้ใช้ทดสอบ](#บัญชีผู้ใช้ทดสอบ)
 - [การใช้งานตาม Role](#การใช้งานตาม-role)
 - [ระบบแจ้งเตือนอีเมล](#ระบบแจ้งเตือนอีเมล)
-- [Deploy บน InfinityFree](#deploy-บน-infinityfree)
 
 ---
 
@@ -155,16 +154,6 @@ private $username = "root";
 private $password = "";
 ```
 
-**สำหรับ InfinityFree:**
-```php
-private $host     = "sql207.infinityfree.com";
-private $db_name  = "if0_43198980_school_repair";
-private $username = "if0_43198980";
-private $password = "รหัสผ่าน vPanel";
-```
-
----
-
 ## บัญชีผู้ใช้ทดสอบ
 
 > รหัสผ่านทุกบัญชี: **123456**
@@ -213,30 +202,6 @@ private $password = "รหัสผ่าน vPanel";
 
 > ⚠️ **หมายเหตุ:** PHP `mail()` อาจไม่ทำงานบน Free Hosting บางเจ้า  
 > ถ้าอีเมลไม่ถูกส่ง ระบบอื่นยังทำงานได้ปกติ (ไม่กระทบ flow หลัก)
-
----
-
-## Deploy บน InfinityFree
-
-1. อัปโหลดไฟล์ทั้งหมดเข้า **File Manager → htdocs/**
-2. สร้างโฟลเดอร์ **uploads/** ใน htdocs
-3. Import `school_repair.sql` ผ่าน **phpMyAdmin** ของ InfinityFree
-4. แก้ไขค่า DB ใน `config/database.php` ให้ตรงกับ InfinityFree
-5. เปิดเว็บที่ `https://schoolrepair.42web.io`
-
----
-
-## ความปลอดภัย
-
-| จุดป้องกัน | วิธีการ |
-|-----------|---------|
-| SQL Injection | PDO Prepared Statements ทุกจุด |
-| XSS | `htmlspecialchars()` ทุกการแสดงผล |
-| รหัสผ่าน | `password_hash()` bcrypt |
-| การเข้าถึงหน้า | `checkLogin()` + `checkRole()` |
-| File Upload | กรองสกุลไฟล์ + rename ด้วย `uniqid()` |
-
----
 
 ## OOP Design Patterns ที่ใช้
 
